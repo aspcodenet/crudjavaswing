@@ -40,7 +40,6 @@ public class Database {
 
         try {
             Connection conn = getConnection();
-            conn.setAutoCommit(false);
 
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM Employees ");
@@ -78,6 +77,8 @@ public class Database {
         try {
             conn = getConnection();
             Statement stmt = conn.createStatement();
+            // WHAT !!!! Är detta fel - han plussar ju en sträng istället för frågetecken
+            // ? för alla STRING
             stmt.executeUpdate("DELETE FROM Employees WHERE EmployeeId = " + id);
             stmt.close();
             conn.close();
@@ -90,6 +91,18 @@ public class Database {
         Connection conn = null;
         try {
             conn = getConnection();
+
+            // DENNA KOD ÄR OSÄKER !!!
+            //String sql = "INSERT INTO Employees(FirstName,LastName) VALUES('" + firstName + "','" + lastName + "')";
+            // KLAR ATT KÖRA!!!
+
+            // MÅSTE GÖRA SÅ HÄR FÖR ATT VARA SÄKER MOT SQL INJECTION
+            //                                                               1,2
+            //String sql = "INSERT INTO Employees(FirstName,LastName) VALUES(?,?)";
+//            stmt.setString(2, lastName);
+//            stmt.setString(1, firstName);
+
+
             PreparedStatement  stmt = conn.prepareStatement("INSERT INTO Employees\n" +
                     "( LastName, FirstName, Title, TitleOfCourtesy, BirthDate, HireDate, Address, City, Region, PostalCode, Country, HomePhone, Extension, Photo, Notes, ReportsTo, PhotoPath, Salary)\n" +
                     "VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?);");
