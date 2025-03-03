@@ -6,17 +6,42 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
+//             conn.setAutoCommit(false);
+
 public class Database {
 
     String url = "jdbc:mysql://localhost:3306/northwind";
     String user = "root";
     String password = "hejsan123";
 
+    public void testTransaction(){
+        try {
+            Connection conn = getConnection();
+
+            conn.setAutoCommit(false); // START TRANSACTION;
+
+            Statement stmt = conn.createStatement();
+            stmt.execute("UPDATE account set saldo = saldo - 100 where accountno='111-222-333'");
+            stmt.execute("UPDATE account set saldo = saldo + 100 where accountno='555-999-222'");
+            conn.commit(); // COMMIT;
+            stmt.close();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace(); // Hamnar vi här görs automatiskt en rollback
+        }
+
+
+    }
+
+
     public List<Employee> allEmployees() {
         ArrayList<Employee> results = new ArrayList<Employee>();
 
         try {
             Connection conn = getConnection();
+            conn.setAutoCommit(false);
+
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM Employees ");
 
